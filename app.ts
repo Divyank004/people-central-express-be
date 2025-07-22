@@ -2,6 +2,8 @@ import createError from 'http-errors'
 import express, { Request, Response, NextFunction } from 'express'
 import HttpStatusCodes from './src/helpers/HttpStatusCodes'
 import authRoutes from './src/routes/auth';
+import logger from './src/middlewares/logger';
+import pinoHTTP from 'pino-http';
 
 interface Error {
   status: number;
@@ -9,6 +11,12 @@ interface Error {
 }
 
 const app = express();
+
+app.use(
+  pinoHTTP({
+    logger,
+  })
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -19,7 +27,7 @@ app.use((req, res, next) =>{
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE')
   res.header(
     'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, X-Custom-Header, X-Auth-Header, Content-Type, Accept, Accept-Version, Authorization, Content-Disposition'
+    'Content-Type, Authorization'
   )
   // Handle preflight
   if (req.method === 'OPTIONS') {
@@ -49,11 +57,7 @@ app.use(function(err: Error, req: Request, res: Response, next: NextFunction) {
 
   // render the error page
   res.status(err.status || HttpStatusCodes.INTERNAL_SERVER_ERROR);
-  res.json({
-    status: err.status || HttpStatusCodes.INTERNAL_SERVER_ERROR,
-    message: err.message || 'Internal Server Error',
-    error: req.app.get('env') === 'dev' ? err : {}
-  });
+  res.end()
 });
 
 module.exports = app;

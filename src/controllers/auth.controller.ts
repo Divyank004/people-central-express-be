@@ -11,7 +11,7 @@ async function register(req: Request, res: Response)
         // Hash the password
         const hashedPassword = await argon2.hash(password);
         // Store the new user   
-        await db.insert('user', {
+        await db.insert('users', {
             username,
             password: hashedPassword
         });
@@ -31,7 +31,7 @@ async function authenticate(req: Request, res: Response)
             return res.status(400).json({ message: 'Username and password are required' });
         }
         const user = await db.select(['name', 'username', 'id', 'password'])
-            .from('user')
+            .from('users')
             .where({ username })
             .first();
         if (!user) {
