@@ -9,7 +9,7 @@ async function getUser(req: Request, res: Response)
         if (!userId) {
            return res.status(HttpStatusCodes.BAD_REQUEST).json({ message: 'UserId is empty.'});
         }
-        const user = await db.select(['users.name', 'username', 'users.id as user_id', 'orgs.name as org_name', 'employees.employee_role', 'employees.no_vacation_days_left'])
+        const user = await db.select(['users.name', 'username', 'users.id as user_id', 'orgs.name as org_name', 'employees.employee_role', 'employees.no_vacation_days_left', 'employees.id as employee_id'])
             .from('users')
             .leftJoin('orgs', 'orgs.id', 'users.org_id')
             .leftJoin('employees', 'employees.user_id', 'users.id')
@@ -21,6 +21,7 @@ async function getUser(req: Request, res: Response)
         }
         const payload = { 
             userId: user.user_id, 
+            employeeId: user.employee_id,
             userName: user.username, 
             name: user.name, 
             orgName: user.org_name, 
