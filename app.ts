@@ -1,9 +1,10 @@
 import createError from 'http-errors'
 import express, { Request, Response, NextFunction } from 'express'
-import HttpStatusCodes from './src/helpers/HttpStatusCodes'
+import HttpStatusCodes from './src/helpers/httpStatusCodes'
 import authRoutes from './src/routes/auth';
 import logger from './src/middlewares/logger';
 import pinoHTTP from 'pino-http';
+import userRoutes from './src/routes/users';
 
 interface Error {
   status: number;
@@ -31,7 +32,7 @@ app.use((req, res, next) =>{
   )
   // Handle preflight
   if (req.method === 'OPTIONS') {
-    res.status(200).end();
+    res.status(HttpStatusCodes.OK).end();
   }
   next()
 })
@@ -42,7 +43,7 @@ app.get('/', async (req, res) => {
 
 // Register routes
 app.use('/auth', authRoutes);
-
+app.use('/', userRoutes);
 
 // catch 404 and forward to error handler
 app.use(function(req: Request, res: Response, next: NextFunction) {
