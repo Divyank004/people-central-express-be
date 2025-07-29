@@ -5,6 +5,7 @@ import authRoutes from './src/routes/auth';
 import logger from './src/middlewares/logger';
 import pinoHTTP from 'pino-http';
 import userRoutes from './src/routes/users';
+import vacationsRoutes from './src/routes/vacations';
 
 interface Error {
   status: number;
@@ -44,6 +45,7 @@ app.get('/', async (req, res) => {
 // Register routes
 app.use('/auth', authRoutes);
 app.use('/', userRoutes);
+app.use('/', vacationsRoutes);
 
 // catch 404 and forward to error handler
 app.use(function(req: Request, res: Response, next: NextFunction) {

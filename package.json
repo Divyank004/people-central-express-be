@@ -10,6 +10,7 @@
     "@types/uuid": "^10.0.0",
     "argon2": "^0.43.1",
     "cookie-parser": "~1.4.4",
+    "date-holidays": "^3.24.4",
     "debug": "~2.6.9",
     "dotenv": "^16.4.5",
     "express": "~4.16.1",

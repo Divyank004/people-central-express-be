@@ -27,7 +27,7 @@ async function authorizeUser(req: Request, res: Response, next: Function)
         next();
     } catch(e) {
         console.error(e);
-        res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
+        res.status(HttpStatusCodes.UNAUTHORIZED).json({ message: 'JWT token expired' });
     }
 }
 
