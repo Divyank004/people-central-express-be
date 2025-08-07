@@ -38,7 +38,7 @@ app.use((req, res, next) =>{
   next()
 })
 
-app.get('/', async (req, res) => {
+app.get('/api', async (req, res) => {
   res.json({ message: 'People Central API up and running' })
 })
 
