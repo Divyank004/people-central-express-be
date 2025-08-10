@@ -1,0 +1,62 @@
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres_db
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${DB_PROD_DBNAME}
+      POSTGRES_USER: ${DB_PROD_USER}
+      POSTGRES_PASSWORD: ${DB_PROD_PASS}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dd"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Express.js TypeScript Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: express_app
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      # Database connection (non-sensitive)
+      DATABASE_URL: postgresql://${DB_PROD_USER}:${DB_PROD_PASS}@postgres:5432/${DB_PROD_DBNAME}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_PROD_DBNAME}
+      DB_USER: ${DB_PROD_USER}
+      DB_PASSWORD: ${DB_PROD_PASS}
+      JWT_SECRET: ${JWT_SECRET}
+      API_URL: http://localhost:3000
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/dist
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: sh -c "yarn install && yarn global add knex && knex migrate:latest && npm run start"
+    stdin_open: true
+    tty: true
+
+
+# Named volumes for data persistence
+volumes:
+  postgres_data:
