@@ -7,7 +7,7 @@ export async function up(knex: Knex): Promise<void> {
         table.string('employee_role');
         table.string('currency');
         table.integer('salary');
-        table.integer('no_vacations_days_left');
+        table.integer('no_vacation_days_left');
         table.integer('org_id').references('id').inTable('orgs')
         table.integer('user_id').references('id').inTable('users')
         table.integer('team_id').references('id').inTable('teams')

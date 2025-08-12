@@ -7,6 +7,7 @@ export async function up(knex: Knex): Promise<void> {
       table.string('name').notNullable();
       table.string('country').notNullable();
       table.string('address');
+      table.string('city');
       table.integer('paid_vacation_days');
       table.timestamp('validfrom').defaultTo(knex.fn.now());
       table.timestamp('validuntil').defaultTo('3000-12-01');

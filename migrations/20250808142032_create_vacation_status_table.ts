@@ -3,7 +3,7 @@ import type { Knex } from "knex";
 
 export async function up(knex: Knex): Promise<void> {
      return knex.schema.createTable('vacation_status', function(table) {
-        table.increments('id').primary();
+        table.integer('id').primary();
         table.string('status').notNullable();
   })
 }
