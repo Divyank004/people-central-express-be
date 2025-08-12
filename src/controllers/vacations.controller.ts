@@ -57,9 +57,7 @@ async function getVacationsCount(req: Request, res: Response) {
             let count = 0;
             const current = new Date(startDate);
             while (current <= endDate) {
-                console.log('current', current)
                 const dayOfWeek = current.getDay();
-                console.log('dayOfWeek', dayOfWeek)
                 // Skip weekends (0 = Sunday, 6 = Saturday)
                 if (dayOfWeek !== 0 && dayOfWeek !== 6) {
                     // Skip public holidays

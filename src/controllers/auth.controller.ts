@@ -8,9 +8,7 @@ async function register(req: Request, res: Response)
  {
     const { username, password } = req.body;
     try{
-        // Hash the password
-        const hashedPassword = await argon2.hash(password);
-        // Store the new user   
+        const hashedPassword = await argon2.hash(password);  
         await db.insert('users', {
             username,
             password: hashedPassword
