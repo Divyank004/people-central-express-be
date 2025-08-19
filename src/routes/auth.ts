@@ -1,15 +1,11 @@
 import {authenticate, register} from '../controllers/auth.controller'
-import express, { Request, Response } from 'express'
+import express from 'express'
 
 const router = express.Router()
 
 /* login */
-router.post('/login', async function(req: Request, res: Response) {
-  authenticate(req, res)
-});
+router.post('/login',authenticate);
 
-router.post('/register', async (req, res) => {
-  register(req, res)
-});
+router.post('/register', register);
 
 export default router;

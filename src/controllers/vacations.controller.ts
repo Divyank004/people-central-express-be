@@ -84,7 +84,7 @@ async function getVacationsCount(req: Request, res: Response) {
             const endDate =  new Date(vacation.end_date);
             const vacationDays = calculateVacationDays(startDate, endDate);
             const vacationType = vacation.type;
-            if (vacationsCount.hasOwnProperty(vacationType)) {
+            if (Object.prototype.hasOwnProperty.call(vacationsCount, vacationType)) {
                 vacationsCount[vacationType] += vacationDays;
             }
         });

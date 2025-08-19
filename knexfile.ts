@@ -1,16 +1,16 @@
 
-require('dotenv').config()
+import 'dotenv/config';
 // Update with your config settings.
 /**
  * @type { Object.<string, import("knex").Knex.Config> }
  */
-module.exports = {
+export const knexConfig: { [s: string]: import("knex").Knex.Config; } = {
 
   dev: {
     client: 'postgresql',
     connection: {
       host: process.env.DB_DEV_HOST,
-      port: process.env.DB_DEV_PORT,
+      port: Number(process.env.DB_DEV_PORT),
       database: process.env.DB_DEV_DBNAME,
       user: process.env.DB_DEV_USER,
       password: process.env.DB_DEV_PASS
@@ -25,7 +25,7 @@ module.exports = {
     client: 'postgresql',
     connection: {
       host: process.env.DB_STAG_HOST,
-      port: process.env.DB_STAG_PORT,
+      port: Number(process.env.DB_STAG_PORT),
       database: process.env.DB_STAG_DBNAME,
       user: process.env.DB_STAG_USER,
       password: process.env.DB_STAG_PASS
@@ -44,7 +44,7 @@ module.exports = {
     client: 'postgresql',
     connection: {
       host: process.env.DB_PROD_HOST,
-      port: process.env.DB_PROD_PORT,
+      port: Number(process.env.DB_PROD_PORT),
       database: process.env.DB_PROD_DBNAME,
       user: process.env.DB_PROD_USER,
       password: process.env.DB_PROD_PASS

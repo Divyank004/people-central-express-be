@@ -37,7 +37,7 @@ app.use((req, res, next) =>{
   next()
 })
 
-app.get('/api', async (req, res) => {
+app.get('/api', (req, res) => {
   res.json({ message: 'People Central API up and running' })
 })
 
@@ -52,7 +52,7 @@ app.use(function(req: Request, res: Response, next: NextFunction) {
 });
 
 // error handler
-app.use(function(err: Error, req: Request, res: Response, next: NextFunction) {
+app.use(function(err: Error, req: Request, res: Response) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -62,4 +62,4 @@ app.use(function(err: Error, req: Request, res: Response, next: NextFunction) {
   res.end()
 });
 
-module.exports = app;
+export default app;
