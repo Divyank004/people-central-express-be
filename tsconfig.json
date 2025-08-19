@@ -110,7 +110,8 @@
   "include": [
     "**/*.ts",
     "**/*.js",
-    "bin/www.ts"
+    "bin/www.ts",
+    "eslint.config.mts"
   ],
   "exclude": [
     "node_modules",
