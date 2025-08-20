@@ -5,13 +5,13 @@ import { defineConfig } from "eslint/config";
 
 export default defineConfig([
   {
-    ignores: ["dist/**"]
+    ignores: ["dist/**"],
   },
-  { 
+  {
     files: ["**/*.{js,mjs,cjs}"],
-    plugins: { js }, 
-    extends: ["js/recommended"], 
-    languageOptions: { globals: globals.node } 
+    plugins: { js },
+    extends: ["js/recommended"],
+    languageOptions: { globals: globals.node },
   },
   {
     files: ["**/*.{ts,mts,cts}"],

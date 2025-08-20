@@ -7,7 +7,8 @@
     "dev": "tsx --watch ./bin/www --ext 'ts,js,json'",
     "build": "tsc",
     "lint": "npx eslint",
-    "lint --fix": "npx eslint --fix"
+    "lint --fix": "npx eslint --fix",
+    "format": "npx prettier --write ."
   },
   "dependencies": {
     "@types/uuid": "^10.0.0",
@@ -37,6 +38,7 @@
     "eslint": "^9.33.0",
     "globals": "^16.3.0",
     "jiti": "^2.5.1",
+    "prettier": "3.6.2",
     "tsx": "^4.19.1",
     "typescript-eslint": "^8.40.0"
   }

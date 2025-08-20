@@ -1,0 +1,10 @@
+# Ignore artifacts:
+dist
+node_modules
+.dockerignore
+.env
+.gitignore
+docker-compose.yml
+tsconfig.json
+Dockerfile
+yarn.lock

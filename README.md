@@ -1,24 +1,31 @@
 # Project Description
-People central is a HR management tool. Where HR can manage employees timesheets, vacations, payrolls. And employees can apply for vacation, see their team mates vacations, fill timesheets. Backend is deployed in  AWS EC2 instance and can be accessed at the URL: https://peoplecentralbe.com/api
+
+People central is a HR management tool. Where HR can manage employees timesheets, vacations, payrolls. And employees can apply for vacation, see their team mates vacations, fill timesheets. Backend is deployed in AWS EC2 instance and can be accessed at the URL: https://peoplecentralbe.com/api
 
 ### Current Userflow:
+
 Employee:
+
 - Can login with credentials
 - Look at the dashboard that shows number of vacation days left, list of
-documents, number of vacations taken in different categories, apply for
-vacation.
+  documents, number of vacations taken in different categories, apply for
+  vacation.
 - Can go to Absence page to look vacation history and apply for vacation if
-needed.
+  needed.
 - Can go to MyTeam page to look at the team members and their vacation
-calendar.
+  calendar.
 - Can go to timesheets page to update the working hours daily.
 
 ## Tech Stack:
+
 Nodejs, Express, Typescript, Postgres, Knex.js, migrations, JWT, Docker, AWS EC2, Nginx, ESLint
 
 ## Setup
+
 ### Environment Variables
+
 Define the following env variables in .env file
+
 ```
 NODE_ENV
 PORT
@@ -44,21 +51,26 @@ DB_PROD_PASS
 ```
 
 ### Install dependencies
+
 ```
 yarn
 ```
 
 ### Run in Dev mode
+
 ```
 npm run dev
 ```
+
 ### Run in Production mode
+
 ```
 npm run build
 npm run start
 ```
 
 ### Run in Docker (both backend server and postgres db will be setup with tables)
+
 ```
 docker compose build
 
