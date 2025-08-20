@@ -3,13 +3,15 @@ import argon2 from 'argon2'
 import db from '../models/db'
 import jwt from 'jsonwebtoken'
 import HttpStatusCodes from '../helpers/httpStatusCodes'
+import { UserResult } from '../types/user'
+import { loginSchema } from '../helpers/validation'
 
 async function register(req: Request, res: Response)
  {
-    const { username, password } = req.body;
     try{
+        const { username, password } = loginSchema.parse(req.body);
         const hashedPassword = await argon2.hash(password);  
-        await db.insert('users', {
+        await db('users').insert({
             username,
             password: hashedPassword
         });
@@ -21,18 +23,18 @@ async function register(req: Request, res: Response)
 };
 
 async function authenticate(req: Request, res: Response)
- {
-    const { username, password } = req.body;
+ {  
     try {
+        const { username, password } = loginSchema.parse(req.body);
         if (!username || !password) {
             return res.status(HttpStatusCodes.BAD_REQUEST).json({ message: 'Username and password are required' });
         }
         const user = await db.select(['username', 'users.id as user_id', 'password'])
             .from('users')
             .where({ username })
-            .first();
+            .first() as UserResult | undefined;
         
-        if (!user) {
+        if (!user || !user.password) {
             return res.status(HttpStatusCodes.BAD_REQUEST).json({ message: 'User does not exist. Please register.'});
         }
 

@@ -3,6 +3,8 @@ import db from '../models/db'
 import HttpStatusCodes from '../helpers/httpStatusCodes'
 import { vacationsCount, VacationsList } from '../types/vacations';
 import Holidays from 'date-holidays';
+import { UserResult } from '../types/user';
+import { CountResult } from '../types/queries';
 
 async function getVacationsCount(req: Request, res: Response) {
     const { userId } = req.params;
@@ -13,27 +15,28 @@ async function getVacationsCount(req: Request, res: Response) {
         const user = await db.select('users.name')
             .from('users')
             .where({ 'users.id': userId })
-            .first();
+            .first() as UserResult | undefined;
         
         if (!user) {
             return res.status(HttpStatusCodes.BAD_REQUEST).json({ message: 'User does not exist. Please register.'});
         }
         
-        const vacationsList: VacationsList[] = await db.select(['vacations.start_date',
+        const vacationsList = await db.select(['vacations.start_date',
             'vacations.end_date', 'vacation_type.type'])
             .from('vacations')
             .leftJoin('employees', 'employees.id', 'vacations.employee_id')
             .leftJoin('users', 'users.id', 'employees.user_id')
             .leftJoin('vacation_type', 'vacation_type.id' ,'vacations.vacation_type_id')
             .where({ 'users.id': userId })
-            .andWhere('vacations.req_status_id', 2);
+            .andWhere('vacations.req_status_id', 2) as VacationsList[];
         
-        const noPendingRequests = await db.count(['vacations.start_date'])
+        const noPendingRequests = await db.count('vacations.id as count')
             .from('vacations')
             .leftJoin('employees', 'employees.id', 'vacations.employee_id')
             .leftJoin('users', 'users.id', 'employees.user_id')
             .where({ 'users.id': userId })
-            .andWhere('vacations.req_status_id', 1);
+            .andWhere('vacations.req_status_id', 1)
+            .first() as CountResult | undefined;
         // TODO Fetch country and state from DB
         const hd = new Holidays('DE', 'NW');
         
@@ -52,7 +55,6 @@ async function getVacationsCount(req: Request, res: Response) {
             });
         });
         console.log('holidayDates', holidayDates)
-        // Calculate vacation days excluding public holidays
         function calculateVacationDays(startDate: Date, endDate: Date): number {
             let count = 0;
             const current = new Date(startDate);
@@ -70,7 +72,6 @@ async function getVacationsCount(req: Request, res: Response) {
             return count;
         }
         
-        // Initialize counters for each vacation type
         const vacationsCount: vacationsCount = {
             'PAID': 0,
             'UNPAID': 0,
@@ -88,7 +89,7 @@ async function getVacationsCount(req: Request, res: Response) {
                 vacationsCount[vacationType] += vacationDays;
             }
         });
-        vacationsCount['PENDING'] = noPendingRequests[0].count
+        vacationsCount['PENDING'] = noPendingRequests ? parseInt(noPendingRequests.count, 10) : 0;
         const resp = [
             {
                 id: 1,

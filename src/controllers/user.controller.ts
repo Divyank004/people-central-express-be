@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import db from '../models/db'
 import HttpStatusCodes from '../helpers/httpStatusCodes'
+import { UserResult } from '../types/user';
 
 async function getUser(req: Request, res: Response)
 {
@@ -14,7 +15,7 @@ async function getUser(req: Request, res: Response)
             .leftJoin('orgs', 'orgs.id', 'users.org_id')
             .leftJoin('employees', 'employees.user_id', 'users.id')
             .where({ 'users.id': userId })
-            .first();
+            .first() as UserResult | undefined;
         
         if (!user) {
             return res.status(HttpStatusCodes.BAD_REQUEST).json({ message: 'User does not exist. Please register.'});

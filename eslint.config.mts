@@ -7,7 +7,8 @@ export default defineConfig([
   {
     ignores: ["dist/**"]
   },
-  { files: ["**/*.{js,mjs,cjs}"],
+  { 
+    files: ["**/*.{js,mjs,cjs}"],
     plugins: { js }, 
     extends: ["js/recommended"], 
     languageOptions: { globals: globals.node } 
@@ -21,7 +22,7 @@ export default defineConfig([
     languageOptions: {
       globals: globals.node,
       parserOptions: {
-        projectService: true, // Automatically find tsconfig.json
+        projectService: true,
       },
     },
   },
