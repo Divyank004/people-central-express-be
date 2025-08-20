@@ -8,7 +8,10 @@
     "build": "tsc",
     "lint": "npx eslint",
     "lint --fix": "npx eslint --fix",
-    "format": "npx prettier --write ."
+    "format": "npx prettier --write .",
+    "seed": "knex seed:run",
+    "migrate": "knex migrate:latest",
+    "migrate:rollback": "knex migrate:rollback"
   },
   "dependencies": {
     "@types/uuid": "^10.0.0",

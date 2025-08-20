@@ -52,7 +52,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    command: sh -c "yarn install && yarn global add knex && knex migrate:latest && knex seed:run && npm run start"
+    command: sh -c "yarn install && yarn global add knex && knex migrate:latest && npm run start"
     stdin_open: true
     tty: true
 
