@@ -6,6 +6,7 @@ import logger from "./src/middlewares/logger";
 import pinoHTTP from "pino-http";
 import userRoutes from "./src/routes/users";
 import vacationsRoutes from "./src/routes/vacations";
+import { version } from './package.json';
 
 interface Error {
   status: number;
@@ -34,7 +35,7 @@ app.use((req, res, next) => {
 });
 
 app.get("/api", (req, res) => {
-  res.json({ message: "People Central API up and running" });
+  res.json({ message: `People Central API v${version} up and running` });
 });
 
 app.use("/auth", authRoutes);

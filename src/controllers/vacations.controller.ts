@@ -1,7 +1,16 @@
 import { Request, Response } from "express";
 import db from "../models/db";
 import HttpStatusCodes from "../helpers/httpStatusCodes";
-import { vacationsCount, VacationsList } from "../types/vacations";
+import {
+  VacationRequest,
+  vacationsCount,
+  VacationsList,
+  VacationRequestSchema,
+  VacationTypeId,
+  VacationStatusId,
+  VacationStatus,
+  VacationsDB,
+} from "../types/vacations";
 import Holidays from "date-holidays";
 import { UserResult } from "../types/user";
 import { CountResult } from "../types/queries";
@@ -91,6 +100,7 @@ async function getVacationsCount(req: Request, res: Response) {
       UNPAID: 0,
       SICK: 0,
       PENDING: 0,
+      MATERNITY: 0,
     };
 
     // Calculate days for each vacation
@@ -139,4 +149,74 @@ async function getVacationsCount(req: Request, res: Response) {
   }
 }
 
-export { getVacationsCount };
+async function createVacationRequest(req: Request, res: Response) {
+  const { userId } = req.params;
+  try {
+    const { startDate, endDate, vacationType }: VacationRequest =
+      VacationRequestSchema.parse(req.body);
+    if (!userId || !startDate || !endDate || !vacationType) {
+      return res
+        .status(HttpStatusCodes.BAD_REQUEST)
+        .json({ message: "Missing required fields." });
+    }
+    const user = (await db
+      .select("users.id", "employees.id as employee_id")
+      .from("users")
+      .leftJoin("employees", "employees.user_id", "users.id")
+      .where({ "users.id": userId })
+      .first()) as UserResult | undefined;
+
+    if (!user || !user.employee_id) {
+      return res
+        .status(HttpStatusCodes.BAD_REQUEST)
+        .json({ message: "User does not exist." });
+      // TODO logging
+    }
+    const vacationTypeIdResult = (await db
+      .select("id")
+      .from("vacation_type")
+      .where("type", String(vacationType))
+      .first()) as VacationTypeId | undefined;
+    const vacationTypeId = vacationTypeIdResult
+      ? vacationTypeIdResult.id
+      : null;
+    if (!vacationTypeId) {
+      return res
+        .status(HttpStatusCodes.BAD_REQUEST)
+        .json({ message: "Invalid vacation type chosen." });
+    }
+    const vacationStatusIdResult = (await db
+      .select("id")
+      .from("vacation_status")
+      .where("status", VacationStatus.PENDING)
+      .first()) as VacationStatusId | undefined;
+    const vacationStatusId = vacationStatusIdResult
+      ? vacationStatusIdResult.id
+      : null;
+    if (!vacationStatusId) {
+      return res
+        .status(HttpStatusCodes.BAD_REQUEST)
+        .json({ message: "Vacation status not found." });
+    }
+    const vacationReqData: VacationsDB = {
+      employee_id: user.employee_id,
+      start_date: startDate,
+      end_date: endDate,
+      vacation_type_id: vacationTypeId,
+      req_status_id: vacationStatusId,
+      validfrom: new Date(),
+      validuntil: new Date("3000-12-31"),
+    };
+    const vacationCreated = await db("vacations")
+      .insert(vacationReqData)
+      .returning("id");
+    return res.status(HttpStatusCodes.CREATED).json(vacationCreated[0]);
+  } catch (e) {
+    console.error(e);
+    return res
+      .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: "Internal server error" });
+  }
+}
+
+export { getVacationsCount, createVacationRequest };
