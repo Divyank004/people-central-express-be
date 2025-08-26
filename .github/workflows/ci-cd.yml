@@ -8,10 +8,10 @@ on:
 
 env:
   NODE_VERSION: '18'
-  DOCKER_IMAGE_NAME: people-central-backend
+  DOCKER_IMAGE_NAME: people-central-express-be-app
   AWS_REGION: eu-central-1  
   ECR_REPOSITORY: people-central-backend-ecr
-  CONTAINER_NAME: people-central-backend
+  CONTAINER_NAME: express_app
  
 jobs:
   # Lint and build Job
