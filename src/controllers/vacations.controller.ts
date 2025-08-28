@@ -263,8 +263,16 @@ async function getVacationHistory(req: Request, res: Response) {
       .from("vacations")
       .leftJoin("employees", "employees.id", "vacations.employee_id")
       .leftJoin("users", "users.id", "employees.user_id")
-      .leftJoin("vacation_type", "vacation_type.id", "vacations.vacation_type_id")
-      .leftJoin("vacation_status", "vacation_status.id", "vacations.req_status_id")
+      .leftJoin(
+        "vacation_type",
+        "vacation_type.id",
+        "vacations.vacation_type_id",
+      )
+      .leftJoin(
+        "vacation_status",
+        "vacation_status.id",
+        "vacations.req_status_id",
+      )
       .where({ "users.id": userId })
       .orderBy("vacations.start_date", "desc")) as VacationHistoryDB[];
     // TODO Fetch country and state from DB
@@ -297,21 +305,23 @@ async function getVacationHistory(req: Request, res: Response) {
       return count;
     }
 
-    const formattedVacations: Vacation[] = vacationsHistory.map((vacation: VacationHistoryDB) => {
-      const startDate = new Date(vacation.start_date);
-      const endDate = new Date(vacation.end_date);
-      const duration = calculateVacationDays(startDate, endDate);
+    const formattedVacations: Vacation[] = vacationsHistory.map(
+      (vacation: VacationHistoryDB) => {
+        const startDate = new Date(vacation.start_date);
+        const endDate = new Date(vacation.end_date);
+        const duration = calculateVacationDays(startDate, endDate);
 
-      return {
-        id: vacation.id,
-        startDate: vacation.start_date,
-        endDate: vacation.end_date,
-        comments: vacation.comments || undefined,
-        duration: `${duration} ${duration === 1 ? 'day' : 'days'}`,
-        vacationType: vacation.vacation_type as VacationType,
-        status: vacation.status as VacationStatus,
-      };
-    });
+        return {
+          id: vacation.id,
+          startDate: vacation.start_date,
+          endDate: vacation.end_date,
+          comments: vacation.comments || undefined,
+          duration: `${duration} ${duration === 1 ? "day" : "days"}`,
+          vacationType: vacation.vacation_type as VacationType,
+          status: vacation.status as VacationStatus,
+        };
+      },
+    );
 
     res.json(formattedVacations);
   } catch (e) {

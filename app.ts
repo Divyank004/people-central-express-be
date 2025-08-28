@@ -6,7 +6,9 @@ import logger from "./src/middlewares/logger";
 import pinoHTTP from "pino-http";
 import userRoutes from "./src/routes/users";
 import vacationsRoutes from "./src/routes/vacations";
-import { version } from './package.json';
+import { version } from "./package.json";
+import swaggerUi from "swagger-ui-express";
+import swaggerSpec from "./src/config/swagger";
 
 interface Error {
   status: number;
@@ -37,6 +39,15 @@ app.use((req, res, next) => {
 app.get("/api", (req, res) => {
   res.json({ message: `People Central API v${version} up and running` });
 });
+
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    customCss: ".swagger-ui .topbar { display: none }",
+    customSiteTitle: "People Central API Documentation",
+  }),
+);
 
 app.use("/auth", authRoutes);
 app.use("/", userRoutes);
