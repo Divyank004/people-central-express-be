@@ -64,3 +64,14 @@ export interface VacationsDB {
   validfrom?: Date;
   validuntil?: Date;
 }
+
+export interface Vacation {
+  id: number;
+  startDate: string;
+  endDate: string;
+  document?: string;
+  comments?: string;
+  duration: string;
+  vacationType: VacationType;
+  status: VacationStatus;
+}

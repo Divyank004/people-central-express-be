@@ -10,10 +10,21 @@ import {
   VacationStatusId,
   VacationStatus,
   VacationsDB,
+  Vacation,
+  VacationType,
 } from "../types/vacations";
 import Holidays from "date-holidays";
 import { UserResult } from "../types/user";
 import { CountResult } from "../types/queries";
+
+interface VacationHistoryDB {
+  id: number;
+  start_date: string;
+  end_date: string;
+  comments: string | null;
+  vacation_type: string;
+  status: string;
+}
 
 async function getVacationsCount(req: Request, res: Response) {
   const { userId } = req.params;
@@ -219,4 +230,96 @@ async function createVacationRequest(req: Request, res: Response) {
   }
 }
 
-export { getVacationsCount, createVacationRequest };
+async function getVacationHistory(req: Request, res: Response) {
+  const { userId } = req.params;
+  try {
+    if (!userId) {
+      return res
+        .status(HttpStatusCodes.BAD_REQUEST)
+        .json({ message: "UserId is empty." });
+    }
+
+    const user = (await db
+      .select("users.name")
+      .from("users")
+      .where({ "users.id": userId })
+      .first()) as UserResult | undefined;
+
+    if (!user) {
+      return res
+        .status(HttpStatusCodes.BAD_REQUEST)
+        .json({ message: "User does not exist. Please register." });
+    }
+
+    const vacationsHistory = (await db
+      .select([
+        "vacations.id",
+        "vacations.start_date",
+        "vacations.end_date",
+        "vacations.comments",
+        "vacation_type.type as vacation_type",
+        "vacation_status.status as status",
+      ])
+      .from("vacations")
+      .leftJoin("employees", "employees.id", "vacations.employee_id")
+      .leftJoin("users", "users.id", "employees.user_id")
+      .leftJoin("vacation_type", "vacation_type.id", "vacations.vacation_type_id")
+      .leftJoin("vacation_status", "vacation_status.id", "vacations.req_status_id")
+      .where({ "users.id": userId })
+      .orderBy("vacations.start_date", "desc")) as VacationHistoryDB[];
+    // TODO Fetch country and state from DB
+    const hd = new Holidays("DE", "NW");
+    const currentYear = new Date().getFullYear();
+    const years = [currentYear];
+
+    const holidayDates = new Set();
+    years.forEach((year) => {
+      const yearHolidays = hd.getHolidays(year);
+      yearHolidays.forEach((holiday) => {
+        if (holiday.type === "public") {
+          holidayDates.add(holiday.date.toString());
+        }
+      });
+    });
+    // TODO Move the function to createVacation endpoint and store the duration in DB
+    function calculateVacationDays(startDate: Date, endDate: Date): number {
+      let count = 0;
+      const current = new Date(startDate);
+      while (current <= endDate) {
+        const dayOfWeek = current.getDay();
+        if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+          if (!holidayDates.has(current.toString())) {
+            count++;
+          }
+        }
+        current.setDate(current.getDate() + 1);
+      }
+      return count;
+    }
+
+    const formattedVacations: Vacation[] = vacationsHistory.map((vacation: VacationHistoryDB) => {
+      const startDate = new Date(vacation.start_date);
+      const endDate = new Date(vacation.end_date);
+      const duration = calculateVacationDays(startDate, endDate);
+
+      return {
+        id: vacation.id,
+        startDate: vacation.start_date,
+        endDate: vacation.end_date,
+        comments: vacation.comments || undefined,
+        duration: `${duration} ${duration === 1 ? 'day' : 'days'}`,
+        vacationType: vacation.vacation_type as VacationType,
+        status: vacation.status as VacationStatus,
+      };
+    });
+
+    res.json(formattedVacations);
+  } catch (e) {
+    console.error(e);
+    res
+      .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: "Internal server error" });
+  }
+}
+
+export { getVacationsCount, createVacationRequest, getVacationHistory };
