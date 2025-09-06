@@ -1,6 +1,7 @@
 # Project Description
 
-People central is a HR management tool. Where HR can manage employees timesheets, vacations, payrolls. And employees can apply for vacation, see their team mates vacations, fill timesheets. Backend is deployed in AWS EC2 instance and can be accessed at the URL: https://peoplecentralbe.com/api
+People central is a HR management tool. Where HR can manage employees timesheets, vacations, payrolls. And employees can apply for vacation, see their team mates vacations, fill timesheets. Backend is deployed in AWS EC2 instance and 
+API Documentation can be accessed at the URL: https://peoplecentralbe.com/api-docs
 
 ### Current Userflow:
 

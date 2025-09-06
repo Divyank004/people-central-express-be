@@ -90,7 +90,14 @@ jobs:
         script: |
           # Login to ECR
           aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
-          
+          # Check if .env file exists
+          if [ ! -f "/home/ubuntu/people-central-express-be/.env" ]; then
+            echo "❌ .env file not found at /home/ubuntu/people-central-express-be/.env"
+            echo "Please create the .env file on EC2 server first"
+            exit 1
+          fi
+          echo "✅ Found .env file, proceeding with deployment..."
+
           # Stop and remove existing container
           docker stop ${{ env.CONTAINER_NAME }} || true
           docker rm ${{ env.CONTAINER_NAME }} || true
@@ -98,13 +105,13 @@ jobs:
           # Pull new image
           docker pull ${{ steps.build-image.outputs.image }}
           
-          # Run new container
+          # Run new container with .env file
           docker run -d \
             --name ${{ env.CONTAINER_NAME }} \
             --restart unless-stopped \
             -p 3000:3000 \
             -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
-            -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
+            --env-file /home/ubuntu/people-central-express-be/.env \
             ${{ steps.build-image.outputs.image }}
           
           # Clean up old images

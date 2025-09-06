@@ -1,13 +1,13 @@
 {
   "name": "backend",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "private": true,
   "scripts": {
     "start": "node dist/bin/www",
     "dev": "tsx --watch ./bin/www --ext 'ts,js,json'",
     "build": "tsc",
     "lint": "npx eslint",
-    "lint --fix": "npx eslint --fix",
+    "lint fix": "npx eslint --fix",
     "format": "npx prettier --write .",
     "seed": "knex seed:run",
     "migrate": "knex migrate:latest",
@@ -45,6 +45,7 @@
     "eslint": "^9.33.0",
     "globals": "^16.3.0",
     "jiti": "^2.5.1",
+    "pino-pretty": "^13.1.1",
     "prettier": "3.6.2",
     "tsx": "^4.19.1",
     "typescript-eslint": "^8.40.0"
